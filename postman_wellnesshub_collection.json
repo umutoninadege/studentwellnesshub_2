@@ -1,0 +1,140 @@
+{
+  "info": {
+    "_postman_id": "6a9b8c82-collection-wellnesshub",
+    "name": "Wellness Hub API",
+    "description": "Collection to test the Wellness Hub API (register, login, create category/resource, create session, read endpoints).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Counselor",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"counselor1@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Counselor One\",\n  \"role\": \"COUNSELOR\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+      }
+    },
+    {
+      "name": "Login (Counselor)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"counselor1@example.com\",\n  \"password\": \"password123\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Save token to environment variable 'authToken'",
+              "if (pm.response.code === 200) {",
+              "  var json = pm.response.json();",
+              "  if (json.token) { pm.environment.set('authToken', json.token); }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Category (COUNSELOR)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Mindfulness\",\n  \"description\": \"Mindfulness practices and guides\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/wellness-categories", "host": ["{{baseUrl}}"], "path": ["api","wellness-categories"] }
+      }
+    },
+    {
+      "name": "Create Resource (COUNSELOR)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Breathing Exercise\",\n  \"description\": \"Short guided breathing exercise\",\n  \"resourceType\": \"VIDEO\",\n  \"contentUrl\": \"http://example.com/breath\",\n  \"durationMinutes\": 5,\n  \"isActive\": true,\n  \"category\": { \"id\": 1 }\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/wellness-resources", "host": ["{{baseUrl}}"], "path": ["api","wellness-resources"] }
+      }
+    },
+    {
+      "name": "Register Student",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"student1@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Student One\",\n  \"role\": \"STUDENT\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+      }
+    },
+    {
+      "name": "Login (Student)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"student1@example.com\",\n  \"password\": \"password123\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Save student token to environment variable 'studentToken'",
+              "if (pm.response.code === 200) {",
+              "  var json = pm.response.json();",
+              "  if (json.token) { pm.environment.set('studentToken', json.token); }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Session (STUDENT)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user\": { \"id\": 2 },\n  \"resource\": { \"id\": 1 },\n  \"startedAt\": \"2025-10-30T19:00:00\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/wellness-sessions", "host": ["{{baseUrl}}"], "path": ["api","wellness-sessions"] }
+      }
+    },
+    {
+      "name": "Get All Resources (public)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/wellness-resources", "host": ["{{baseUrl}}"], "path": ["api","wellness-resources"] }
+      }
+    },
+    {
+      "name": "Get All Categories (public)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/wellness-categories", "host": ["{{baseUrl}}"], "path": ["api","wellness-categories"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "authToken", "value": "" },
+    { "key": "studentToken", "value": "" }
+  ]
+}

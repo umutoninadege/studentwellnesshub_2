@@ -1,0 +1,11 @@
+{
+  // Map the Java execution environment JavaSE-17 to the installed JDK 25
+  // This tells the VS Code Java extension that JavaSE-17 can use the JDK at the given path.
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Program Files\\Java\\jdk-25",
+      "default": true
+    }
+  ]
+}

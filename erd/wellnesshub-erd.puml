@@ -1,0 +1,121 @@
+@startuml
+' Wellness Hub ERD (PlantUML)
+' Save as wellnesshub-erd.puml and render with PlantUML (https://plantuml.com/)
+
+hide circle
+skinparam linetype ortho
+
+entity Province {
+  * id : bigint <<PK>>
+  --
+  code : varchar(20)
+  name : varchar(100)
+}
+
+entity District {
+  * id : bigint <<PK>>
+  --
+  code : varchar(20)
+  name : varchar(100)
+  province_id : bigint <<FK>>
+}
+
+entity Sector {
+  * id : bigint <<PK>>
+  --
+  code : varchar(20)
+  name : varchar(100)
+  district_id : bigint <<FK>>
+}
+
+entity Cell {
+  * id : bigint <<PK>>
+  --
+  code : varchar(20)
+  name : varchar(100)
+  sector_id : bigint <<FK>>
+}
+
+entity Village {
+  * id : bigint <<PK>>
+  --
+  code : varchar(20)
+  name : varchar(100)
+  cell_id : bigint <<FK>>
+}
+
+entity "User" as UserEntity {
+  * id : bigint <<PK>>
+  --
+  email : varchar(255) <<unique>>
+  password_hash : varchar(255)
+  full_name : varchar(255)
+  role : enum(STUDENT, COUNSELOR)
+  active : boolean
+  created_at : timestamp
+  village_id : bigint <<FK>>
+}
+
+entity Appointment {
+  * id : bigint <<PK>>
+  --
+  student_id : bigint <<FK>>
+  counselor_id : bigint <<FK>>
+  start_time : timestamp
+  end_time : timestamp
+  notes : varchar(500)
+}
+
+entity WellnessCategory {
+  * id : bigint <<PK>>
+  --
+  name : varchar(50)
+  description : varchar(200)
+  is_active : boolean
+}
+
+entity WellnessResource {
+  * id : bigint <<PK>>
+  --
+  title : varchar(200)
+  description : varchar(1000)
+  resource_type : varchar(50)
+  content_url : varchar(500)
+  duration_minutes : integer
+  is_active : boolean
+  created_at : timestamp
+  category_id : bigint <<FK>>
+}
+
+entity WellnessSession {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  resource_id : bigint <<FK>>
+  started_at : timestamp
+  completed_at : timestamp
+  progress_percentage : integer
+  notes : varchar(500)
+}
+
+' Relationships
+Province ||--o{ District : contains
+District ||--o{ Sector : contains
+Sector ||--o{ Cell : contains
+Cell ||--o{ Village : contains
+Village ||--o{ UserEntity : lives_in
+
+UserEntity ||--o{ Appointment : counselor_of "counselor_id"
+UserEntity ||--o{ Appointment : student_of "student_id"
+
+WellnessCategory ||--o{ WellnessResource : has
+WellnessResource ||--o{ WellnessSession : used_in
+UserEntity ||--o{ WellnessSession : owns
+
+' Notes
+note right of WellnessResource
+  - category_id -> WellnessCategory.id
+  - sessions reference resource_id
+end note
+
+@enduml

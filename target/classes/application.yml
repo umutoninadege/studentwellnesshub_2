@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wellnessdb
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: Nadege5
+  jpa:
+    hibernate:
+      # For development: recreate schema so column length changes are applied.
+      # WARNING: 'create' will drop existing data. Change back to 'update' after verification.
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        "[format_sql]": true
+app:
+  security:
+    jwt:
+      issuer: wellness-hub
+      secret: "change-this-in-prod-very-long-secret-string-please-change"
+      expirationMinutes: 60
+  data:
+    # When true the application will insert seed location & wellness data on startup.
+    # Set to true only for initial development. For manual data entry via Postman keep false.
+    init: false
+
